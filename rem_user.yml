@@ -1,0 +1,46 @@
+---
+- hosts: lista
+  become: true
+  become_user: root
+  vars: 
+    username: 
+      - test 
+  tasks: 
+    - name: Blokowanie usera
+      user:
+        name: "{{ item }}"
+        password_lock: yes
+      with_items:
+        - "{{ username }}"
+      register: lock_user
+    - name: output blokowanie uzytkownika 
+      debug: 
+        msg: "user blokowany {{ lock_user }}"
+
+
+    - name: Blokowanie usera passwd -l  
+      shell: passwd -l {{ item }}
+      with_items:
+        - "{{ username }}" 
+      register: passwd_output
+    - debug:
+        msg: "uzytkownik zablokowany {{ passwd_output }}" 
+
+    
+    - name: Usuwanie Grup
+      shell: usermod -G {{ item }} -g {{ item  }} {{ item }}
+      with_items:
+        - "{{ username }}" 
+      register: rem_group
+    - debug:
+        msg: "Grupy zmienione {{ rem_group }}"
+
+   
+    - name: Usuwanie login shell i block user 
+      shell: usermod -e 2021-04-06 -L -s /sbin/nologin {{ item }}
+      with_items:
+        - "{{ username }}"
+      register: mod_user
+    - debug:
+        msg: "user {{ mod_user }} changed"  
+

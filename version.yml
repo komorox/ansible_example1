@@ -1,0 +1,10 @@
+---
+- hosts: tst prod
+  become: true
+  become_user: root
+  tasks:
+    - name: Nazwa hosta i wersja systemu
+      debug:
+        msg: > 
+                FQDN o nazwie : {{ ansible_fqdn }} : {{ ansible_distribution }} : {{ ansible_distribution_version }} : {{ ansible_all_ipv4_addresses }}
+
